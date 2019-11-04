@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors');
 
 const userRoutes = require('./routes/users');
-// const postRoutes = require('./routes/posts');
+const postRoutes = require('./routes/posts');
 // const commentRoutes = require('./routes/comments');
 // const departmentRoutes = require('./routes/departments');
 
@@ -16,7 +16,7 @@ app.get('/', (request, response) => {
   });
 
 app.use('/users', userRoutes);
-//app.use('/posts', postRoutes);
+app.use('/posts', postRoutes);
 // app.use('/comments', commentRoutes);
 // app.use('/departments', departmentRoutes);
 

@@ -58,17 +58,17 @@ describe('/POST user login', () => {
 //     });
 // });
 
-// describe('/POST article', () => {
-//     it('it should POST an article', (done) => {
-//       chai.request(server)
-//           .post('/articles')
-//           .end((err, res) => {
-//                 res.should.have.status(200);
-//                 res.body.should.be.a('object');
-//             done();
-//           });
-//     });
-// });
+describe('/POST article', () => {
+    it('it should POST an article', (done) => {
+      chai.request(server)
+          .post('/posts/articles')
+          .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+            done();
+          });
+    });
+});
 
 // describe('/PATCH article', () => {
 //     it('it should UPDATE an article', (done) => {

@@ -2,21 +2,22 @@ const db = require('../config/connection')
 const pool = db.pool;
 
 const getUsers = (request, response) => {
-  pool.query('SELECT username, email, phone_no, created_at  FROM users ORDER BY id ASC', (error, results) => {
-    if (error) {
-      response.json({
-        status: "failed",
-        data: {
-          message: error
-        }
+  try{
+    pool.query('SELECT username, email, phone_no, created_at  FROM users ORDER BY id ASC', (error, results) => {
+      const allusers = results.rows;
+      response.status(200).json({
+        status: "success",
+        data: allusers
       })
-    }
-    const allusers = results.rows;
-    response.status(200).json({
-      status: "success",
-      data: allusers
     })
-  })
+  } catch(err) {
+    response.status(400).json({
+      status: "failed",
+      data: {
+        message: err
+      }
+    })
+  }
 }
 
 const getUserById = (request, response) => {
@@ -32,9 +33,9 @@ const getUserById = (request, response) => {
 
 const createUser = async (request, response) => {
   try {
+    const {password, phone_no, first_name, last_name, avatar, job_position, department, user_address } = request.body
     let email = request.body.email.toLowerCase();
     let username = request.body.username.toLowerCase();
-    const {password, phone_no, first_name, last_name, avatar, job_position, department, user_address } = request.body
 
     const newUser = await pool.query('INSERT INTO users (username, password, email, phone_no) VALUES ($1, $2, $3, $4) RETURNING id, username, email, phone_no', [username, password, email, phone_no]);
     const newUserDetails = await pool.query('INSERT INTO user_details (first_name, last_name, user_id, avatar, job_position, department, user_address) VALUES ($1, $2, $3, $4, $5, $6, $7)', [first_name, last_name, newUser.rows[0].id, avatar, job_position, department, user_address]);

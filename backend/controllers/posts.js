@@ -4,12 +4,8 @@ const pool = db.pool;
 const createPost = async (request, response) => {
     try {
       const {title, content, user_id, status, gif_url, post_type } = request.body
-      console.log(request.body)
-      //check if we have a gif 
-      //if gif, set post_type to 2
-      //else set post_type to 1
   
-      //const newPost = await pool.query('INSERT INTO posts (title, content, user_id, status, gif_url, post_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING title, content, gif_url, post_type', [title, content, user_id, status, gif_url, post_type]);
+      const newPost = await pool.query('INSERT INTO posts (title, content, user_id, status, gif_url, post_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING title, content, gif_url, post_type', [title, content, user_id, status, gif_url, post_type]);
         
       const newPostResult = newPost.rows[0]
       return response.status(200).json({

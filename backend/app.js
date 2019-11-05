@@ -1,8 +1,9 @@
 const express = require('express')
 const cors = require('cors');
 
+const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
-const postRoutes = require('./routes/posts');
+//const postRoutes = require('./routes/posts');
 // const commentRoutes = require('./routes/comments');
 // const departmentRoutes = require('./routes/departments');
 
@@ -15,6 +16,7 @@ app.get('/', (request, response) => {
     response.json({ info: 'Node.js, Express, and Postgres API' })
   });
 
+app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/posts', postRoutes);
 // app.use('/comments', commentRoutes);

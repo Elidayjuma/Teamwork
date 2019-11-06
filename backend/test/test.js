@@ -82,17 +82,17 @@ describe('/PATCH article', () => {
     });
 });
 
-// describe('/DELETE article', () => {
-//     it('it should DELETE an article', (done) => {
-//       chai.request(server)
-//           .delete('/articles:id')
-//           .end((err, res) => {
-//                 res.should.have.status(200);
-//                 res.body.should.be.a('object');
-//             done();
-//           });
-//     });
-// });
+describe('/DELETE article', () => {
+    it('it should DELETE an article', (done) => {
+      chai.request(server)
+          .delete('/articles:id')
+          .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+            done();
+          });
+    });
+});
 
 // describe('/DELETE gifs', () => {
 //     it('it should DELETE an gifs', (done) => {

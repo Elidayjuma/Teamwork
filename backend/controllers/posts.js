@@ -38,7 +38,6 @@ exports.updateArticle = async (request, response) => {
   var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
   var dateTime = date+' '+time;
-  console.log(request.params);
   try{
     const { title, content, user_id, status } = request.body
 
@@ -47,6 +46,24 @@ exports.updateArticle = async (request, response) => {
     return response.status(200).json({
       status: "success",
       data: { newPostResult }
+    })
+  } catch (err) {
+    console.log(err)
+    response.status(400).json({
+      status: "failed",
+      data: err
+    })
+  } 
+}
+
+exports.deleteArticle =async (request, response) => {
+  try {
+    const deletedArticle = await pool.query('DELETE FROM posts WHERE id=$1', [request.params.articleID]);
+    return response.status(200).json({
+      status: "success",
+      data: {
+        message: "Article deleted successfully"
+      }
     })
   } catch (err) {
     console.log(err)

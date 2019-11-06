@@ -106,17 +106,17 @@ describe('/DELETE article', () => {
 //     });
 // });;
 
-// describe('/POST artcle comment', () => {
-//     it('it should POST a comment for a given article', (done) => {
-//       chai.request(server)
-//           .post('/articles/articleID/comment')
-//           .end((err, res) => {
-//                 res.should.have.status(200);
-//                 res.body.should.be.a('object');
-//             done();
-//           });
-//     });
-// });
+describe('/POST artcle comment', () => {
+    it('it should POST a comment for a given article', (done) => {
+      chai.request(server)
+          .post('/articles/articleID/comment')
+          .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+            done();
+          });
+    });
+});
 
 // describe('/POST gif comment', () => {
 //     it('it should POST a comment for a given gif', (done) => {

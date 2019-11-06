@@ -10,7 +10,6 @@ app.use(express.json());
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const postRoutes = require('./routes/posts');
-// const commentRoutes = require('./routes/comments');
 // const departmentRoutes = require('./routes/departments');
 
 app.get('/', (request, response) => {
@@ -18,9 +17,8 @@ app.get('/', (request, response) => {
   });
 
 app.use('/auth', authRoutes);
-app.use('/users', userRoutes);
 app.use('/posts', postRoutes);
-// app.use('/comments', commentRoutes);
+app.use('/users', userRoutes);
 // app.use('/departments', departmentRoutes);
 
 const PORT = process.env.PORT || 5000;

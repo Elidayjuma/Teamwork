@@ -1,16 +1,17 @@
 const express = require('express')
 const cors = require('cors');
+// const bodyParser = require('body-parser');
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
 
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const postRoutes = require('./routes/posts');
 // const commentRoutes = require('./routes/comments');
 // const departmentRoutes = require('./routes/departments');
-
-const app = express();
-
-app.use(cors());
-app.use(express.json());
 
 app.get('/', (request, response) => {
     response.json({ info: 'Node.js, Express, and Postgres API' })

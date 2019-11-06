@@ -46,17 +46,17 @@ describe('/POST user login', () => {
   });
 });
 
-// describe('/POST gif', () => {
-//     it('it should POST a gif', (done) => {
-//       chai.request(server)
-//           .post('/gif')
-//           .end((err, res) => {
-//                 res.should.have.status(200);
-//                 res.body.should.be.a('object');
-//             done();
-//           });
-//     });
-// });
+describe('/POST gif', () => {
+    it('it should POST a gif', (done) => {
+      chai.request(server)
+          .post('/posts/gifs')
+          .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+            done();
+          });
+    });
+});
 
 describe('/POST article', () => {
     it('it should POST an article', (done) => {
@@ -70,17 +70,17 @@ describe('/POST article', () => {
     });
 });
 
-// describe('/PATCH article', () => {
-//     it('it should UPDATE an article', (done) => {
-//       chai.request(server)
-//           .patch('/articles:id')
-//           .end((err, res) => {
-//                 res.should.have.status(200);
-//                 res.body.should.be.a('object');
-//             done();
-//           });
-//     });
-// });
+describe('/PATCH article', () => {
+    it('it should UPDATE an article', (done) => {
+      chai.request(server)
+          .patch('/article/:articleID')
+          .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+            done();
+          });
+    });
+});
 
 // describe('/DELETE article', () => {
 //     it('it should DELETE an article', (done) => {

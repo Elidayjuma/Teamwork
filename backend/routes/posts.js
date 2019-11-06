@@ -1,9 +1,10 @@
 const express = require('express');
-const post = require('../controllers/posts')
-
 const router = express.Router();
+const post = require('../controllers/posts');
 
-router.post('/article', post.createArticle)
+router.post('/article', post.createArticle);
+router.patch('/article/:articleID', post.updateArticle);
+router.post('/gif', post.createGif);
 
 
 module.exports = router;

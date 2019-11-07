@@ -12,9 +12,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (request, response) => {
-    response.json({ info: 'Node.js, Express, and Postgres API' })
-  });
 
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
@@ -22,6 +19,10 @@ app.use('/posts', postRoutes);
 // app.use('/comments', commentRoutes);
 // app.use('/departments', departmentRoutes);
 
+app.get('/', (request, response) => {
+    response.json({ info: 'Node.js, Express, and Postgres API' })
+  });
+  
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Listening on Port ${PORT}`);

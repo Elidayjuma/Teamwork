@@ -1,11 +1,12 @@
 const express = require('express')
 const cors = require('cors');
-// const bodyParser = require('body-parser');
+const {cloudinaryConfig} = require('./config/cloudinaryConfig');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use('*', cloudinaryConfig);
 
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');

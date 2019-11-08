@@ -106,7 +106,7 @@ describe('/DELETE article', () => {
 //     });
 // });;
 
-describe('/POST artcle comment', () => {
+describe('/POST article comment', () => {
     it('it should POST a comment for a given article', (done) => {
       chai.request(server)
           .post('/articles/articleID/comment')

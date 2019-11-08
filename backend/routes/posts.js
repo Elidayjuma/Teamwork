@@ -31,6 +31,7 @@ router.delete('/article/:articleID', post.deleteArticle);
 
 //gif routes
 router.post('/gif', multerUploads, returnImageUrl ,post.createGif);
+router.delete('/gif/:gifID', post.deleteGif);
 
 
 module.exports = router;

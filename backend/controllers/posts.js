@@ -84,3 +84,20 @@ exports.createGif = async (request, response) => {
   }
 }
 
+exports.deleteGif = async (request, response) => {
+  try {
+    const deletedGif = await pool.query('DELETE FROM posts WHERE id=$1', [request.params.gifID]);
+    return response.status(200).json({
+      status: "success",
+      data: {
+        message: "Gif deleted successfully"
+      }
+    })
+  } catch (err) {
+    response.status(500).json({
+      status: "failed",
+      data: "Internal Server Error"
+    })
+  }
+}
+

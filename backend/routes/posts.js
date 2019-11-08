@@ -22,6 +22,8 @@ const returnImageUrl = async (request, response, next) => {
         next();
     })
 }
+//feeds routes
+router.get('/', post.getFeeds);
 
 //article routes
 router.post('/article', post.createArticle);

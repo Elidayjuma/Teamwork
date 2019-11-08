@@ -1,6 +1,24 @@
 const db = require('../config/connection');
 const pool = db.pool;
 
+exports.getFeeds = async (request, response) => {
+  try {
+    const postFeeds = await pool.query(`
+      SELECT * FROM posts
+      ORDER BY created_at DESC`);
+      posts = postFeeds.rows;
+      return response.json({
+       status: "success",
+       data: {
+        posts
+       }
+      })
+
+  } catch (err) {
+
+  }
+}
+
 exports.createArticle = async (request, response) => {
   try {
     const { title, content, user_id, status } = request.body

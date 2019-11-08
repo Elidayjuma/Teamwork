@@ -25,12 +25,13 @@ const returnImageUrl = async (request, response, next) => {
 
 //article routes
 router.post('/article', post.createArticle);
-router.post('/article/:articleID/comment', comment.createComment);
+router.post('/article/:postID/comment', comment.createComment);
 router.patch('/article/:articleID', post.updateArticle);
 router.delete('/article/:articleID', post.deleteArticle);
 
 //gif routes
 router.post('/gif', multerUploads, returnImageUrl ,post.createGif);
+router.post('/gif/:postID/comment', comment.createComment);
 router.delete('/gif/:gifID', post.deleteGif);
 
 

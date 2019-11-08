@@ -2,7 +2,6 @@ const db = require('../config/connection');
 const pool = db.pool;
 
 exports.createArticle = async (request, response) => {
-  console.log(request.body);
   try {
     const { title, content, user_id, status } = request.body
 
@@ -72,7 +71,9 @@ exports.createGif = async (request, response) => {
     const newGifResult = newGif.rows[0]
     return response.status(200).json({
       status: "success",
-      newGifResult
+      data: {
+        newGifResult
+      }
     })
   } catch (err) {
     console.log(err)

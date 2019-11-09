@@ -29,6 +29,7 @@ router.get('/',auth.checkToken, post.getFeeds);
 //article routes
 router.post('/article',auth.checkToken, post.createArticle);
 router.post('/article/:postID/comment',auth.checkToken, comment.createComment);
+router.post('/article/:articleID/like', auth.checkToken, post.likeArticle);
 router.get('/article/:articleID',auth.checkToken, post.getArticle);
 router.patch('/article/:articleID',auth.checkToken, post.updateArticle);
 router.delete('/article/:articleID', auth.checkToken, post.deleteArticle);

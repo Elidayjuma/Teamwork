@@ -34,10 +34,11 @@ exports.getArticle = async (request, response) => {
         comments.status AS comment_status,
         comments.content AS comment_content,
         comments.user_id AS comment_user_id,
-        comments.created_at AS comment_created_at
+        comments.created_at AS comment_created_at,
+        post_likes.user_id AS likers
       FROM posts
-      LEFT JOIN comments 
-      ON posts.id=comments.post_id
+      LEFT JOIN comments ON posts.id=comments.post_id
+      LEFT JOIN post_likes ON posts.id=post_likes.post_id
       WHERE posts.id=$1`,
       [request.params.articleID]);
     article = singleArticle.rows;
@@ -69,12 +70,26 @@ exports.getArticle = async (request, response) => {
         comments.push(comment);
       }
     }
+    //for each row, push the likers into a likers array
+    let likers = [];
+    if (article[0].likers == null) {
+      comments.push(null)
+    } else{
+      for (let i = 0; i < article.length; i++) {
+        console.log(article[0].likers);
+        let like = {
+          user_id: article[i].likers
+        }
+        likers.push(like);
+      }
+    }
 
     return response.status(200).json({
       status: "success",
       data: {
         post_content,
-        comments
+        comments,
+        likers
       }
     })
 
@@ -150,11 +165,52 @@ exports.deleteArticle =async (request, response) => {
   } 
 }
 
+exports.likeArticle = async (request, response, next) => {
+  try {
+    const{user_id} = request.body
+    const checkIfAlreadyLiked = await pool.query(`
+      SELECT * FROM post_likes WHERE user_id=$1 AND post_id=$2`,[user_id, request.params.articleID]);
+    if( checkIfAlreadyLiked.rowCount == 0) {
+      await pool.query(`
+        INSERT INTO post_likes (user_id, post_id)
+        VALUES ($1,$2)`, [user_id, request.params.articleID])
+        console.log("liked!")
+        return response.status(200).json({
+          status: "success",
+          data: {
+            message: "liked"
+          }
+        })
+    } else {
+      await pool.query(`
+        DELETE FROM post_likes
+        WHERE user_id=$1`,[user_id])
+        console.log("un-liked!")
+        return response.status(200).json({
+          status: "success",
+          data: {
+            message: "unliked"
+          }
+        })
+    }
+
+  }catch (err) {
+    console.log(err)
+    response.status(500).json({
+      status: "failed",
+      data: "Internal Server Error"
+    })
+  }
+}
+
 exports.createGif = async (request, response) => {
   try {
     const {title, user_id, status, gif_url} = request.body
 
-    const newGif = await pool.query('INSERT INTO posts (title, content, user_id, status, gif_url, post_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING title, gif_url, post_type', [title, "none", user_id, status, gif_url, 2]);
+    const newGif = await pool.query(`
+      INSERT INTO posts (title, content, user_id, status, gif_url, post_type) 
+      VALUES ($1, $2, $3, $4, $5, $6) 
+      RETURNING title, gif_url, post_type`, [title, "none", user_id, status, gif_url, 2]);
       
     const newGifResult = newGif.rows[0]
     return response.status(200).json({

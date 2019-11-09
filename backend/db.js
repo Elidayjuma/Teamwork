@@ -1,5 +1,5 @@
 /**
- * This page initializes the database
+ * This page initializes the database by creating tables and initializing static database values
  * First install "make-runnable"
  * then on the terminal run "node db createTables"
  * then initialize static tables by running "node db initializeStaticValues"
@@ -115,7 +115,7 @@ const createTables = () => {
     CREATE TABLE IF NOT EXISTS
       post_likes(
         id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL REFERENCES users(id),
+        user_id INTEGER NOT NULL REFERENCES users(id) UNIQUE,
         post_id INTEGER NOT NULL REFERENCES posts(id),
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         modified_date TIMESTAMP

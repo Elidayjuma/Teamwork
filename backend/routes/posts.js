@@ -28,6 +28,7 @@ router.get('/', post.getFeeds);
 //article routes
 router.post('/article', post.createArticle);
 router.post('/article/:postID/comment', comment.createComment);
+router.get('/article/:articleID', post.getArticle);
 router.patch('/article/:articleID', post.updateArticle);
 router.delete('/article/:articleID', post.deleteArticle);
 

@@ -25,8 +25,7 @@ const createUser = async (request, response) => {
       })
     }
   }
-
-  
+ 
 const loginUser = async (request, res) => {
     try {
       const {email, password} = request.body

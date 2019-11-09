@@ -54,19 +54,23 @@ exports.getArticle = async (request, response) => {
     }
     //for each row, push the comment content into comments array
     let comments = [];
-    for (let i = 0; i < article.length; i++) {
-      console.log(article[0].comment_content);
-      let comment = {
-        comment_id: article[i].comment_id,
-        comment_content: article[i].comment_content,
-        comment_status: article[i].comment_status,
-        comment_posted_by: article[i].comment_user_id,
-        comment_created_at: article[i].comment_created_at
+    if (article[0].comment_id == null) {
+      comments.push(null)
+    } else{
+      for (let i = 0; i < article.length; i++) {
+        console.log(article[0].comment_id);
+        let comment = {
+          comment_id: article[i].comment_id,
+          comment_content: article[i].comment_content,
+          comment_status: article[i].comment_status,
+          comment_posted_by: article[i].comment_user_id,
+          comment_created_at: article[i].comment_created_at
+        }
+        comments.push(comment);
       }
-      comments.push(comment);
     }
 
-    return response.json({
+    return response.status(200).json({
       status: "success",
       data: {
         post_content,
@@ -76,7 +80,7 @@ exports.getArticle = async (request, response) => {
 
   } catch (err) {
     console.log(err)
-    return response.json({
+    return response.status(500).json({
       status: "failed",
       data: {
         message: "Server error!"

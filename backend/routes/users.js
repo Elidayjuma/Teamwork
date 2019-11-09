@@ -1,11 +1,12 @@
 const express = require('express');
-const user = require('../controllers/users')
+const user = require('../controllers/users');
+const auth = require('../authentication/auth');
 
 const router = express.Router();
 
-// router.get('/', user.getUsers)
-// router.get('/:id', user.getUserById)
-// router.put('/:id', user.updateUser)
-// router.delete('/:id', user.deleteUser)
+// router.get('/', auth.checkToken, user.getUsers)
+// router.get('/:id', auth.checkToken, user.getUserById)
+// router.put('/:id', auth.checkToken, user.updateUser)
+// router.delete('/:id', auth.checkToken, user.deleteUser)
 
 module.exports = router;

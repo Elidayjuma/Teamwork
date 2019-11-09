@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const post = require('../controllers/posts');
 const comment = require('../controllers/comments');
+const auth = require('../authentication/auth');
 
 const { resolve }  = require('path')
 const { uploader}  = require('../config/cloudinaryConfig')
@@ -23,19 +24,19 @@ const returnImageUrl = async (request, response, next) => {
     })
 }
 //feeds routes
-router.get('/', post.getFeeds);
+router.get('/',auth.checkToken, post.getFeeds);
 
 //article routes
-router.post('/article', post.createArticle);
-router.post('/article/:postID/comment', comment.createComment);
-router.get('/article/:articleID', post.getArticle);
-router.patch('/article/:articleID', post.updateArticle);
-router.delete('/article/:articleID', post.deleteArticle);
+router.post('/article',auth.checkToken, post.createArticle);
+router.post('/article/:postID/comment',auth.checkToken, comment.createComment);
+router.get('/article/:articleID',auth.checkToken, post.getArticle);
+router.patch('/article/:articleID',auth.checkToken, post.updateArticle);
+router.delete('/article/:articleID', auth.checkToken, post.deleteArticle);
 
 //gif routes
-router.post('/gif', multerUploads, returnImageUrl ,post.createGif);
-router.post('/gif/:postID/comment', comment.createComment);
-router.delete('/gif/:gifID', post.deleteGif);
+router.post('/gif',auth.checkToken, multerUploads, returnImageUrl ,post.createGif);
+router.post('/gif/:postID/comment',auth.checkToken, comment.createComment);
+router.delete('/gif/:gifID',auth.checkToken, post.deleteGif);
 
 
 module.exports = router;

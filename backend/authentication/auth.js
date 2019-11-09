@@ -120,7 +120,7 @@ const checkToken = (req, res, next) => {
   } else {
     //If header is undefined return Forbidden (403)
     res.status(403).json({
-      "message": "You are not authorized to view this page!",
+      "message": "You are not authorized!",
       status: 403
     })
   }

@@ -1,7 +1,7 @@
-// const db = require('../config/connection')
-// const pool = db.pool;
+const db = require('../config/connection')
+const pool = db.pool;
 
-// const getUsers = (request, response) => {
+// exports.getUsers = (request, response) => {
 //   pool.query('SELECT username, email, phone_no, created_at  FROM users ORDER BY id ASC', (error, results) => {
 //     if (error) {
 //       response.json({
@@ -19,7 +19,7 @@
 //   })
 // }
 
-// const getUserById = (request, response) => {
+// exports.getUserById = (request, response) => {
 //   const id = parseInt(request.params.id)
 
 //   pool.query('SELECT username, email, phone_no, created_at FROM users WHERE id = $1', [id], (error, results) => {
@@ -30,7 +30,7 @@
 //   })
 // }
 
-// const updateUser = (request, response) => {
+// exports.updateUser = (request, response) => {
 //   const id = parseInt(request.params.id)
 //   const { name, email } = request.body
 
@@ -46,16 +46,16 @@
 //   )
 // }
 
-// const deleteUser = (request, response) => {
-//   const id = parseInt(request.params.id)
+exports.deleteUser = (request, response) => {
+  const id = parseInt(request.params.id)
 
-//   pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
-//     if (error) {
-//       throw error
-//     }
-//     response.status(200).send(`User deleted with ID: ${id}`)
-//   })
-// }
+  pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).send(`User deleted with ID: ${id}`)
+  })
+}
 
 // module.exports = {
 //   getUsers,

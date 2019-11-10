@@ -3,7 +3,7 @@ const auth = require('../authentication/auth')
 
 const router = express.Router();
 
-router.post('/create-user', auth.checkToken, auth.createUser)
+router.post('/create-user', auth.checkToken, auth.checkUserRole, auth.createUser)
 router.post('/signin', auth.loginUser)
 
 

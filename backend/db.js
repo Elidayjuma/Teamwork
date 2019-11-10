@@ -3,10 +3,12 @@
  * First install "make-runnable"
  * then on the terminal run "node db createTables"
  * then initialize static tables by running "node db initializeStaticValues"
+ * create the admin by running "node db createAdmin"
  */
-const db = require('../config/connection');
+const db = require('./config/connection');
 const pool = db.pool;
 
+const bcrypt = require('bcrypt');
 
 pool.on('connect', () => {
   console.log('connected to the db');
@@ -214,19 +216,29 @@ const initializeStaticValues = () => {
 }
 
 /**
- * Drop Tables
+ * Create Admin
  */
-const dropTables = () => {
-  const queryText = 'DROP TABLE IF EXISTS reflections';
-  pool.query(queryText)
-    .then((res) => {
-      console.log(res);
-      pool.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      pool.end();
-    });
+const createAdmin = async (req, res) => {
+  try{
+    let initialPassword = bcrypt.hashSync("admin", 10);
+    const username = "admin";
+    const email="admin@admin.team";
+    const phone_no = 123456789;
+    const admin = await pool.query( `
+    INSERT INTO users (
+    username, password, email, phone_no) 
+    VALUES ($1, $2, $3, $4)
+    RETURNING id`,
+    [username, initialPassword, email, phone_no]);
+
+    await pool.query(`INSERT INTO role_users (user_id, role_id) VALUES ($1, $2)`, [admin.rows[0].id, 2]);
+    console.log("Mission completed");
+    pool.end();
+  } catch(err) {
+    console.log(err);
+    pool.end();
+  }
+    
 }
 
 pool.on('remove', () => {
@@ -236,8 +248,8 @@ pool.on('remove', () => {
 
 module.exports = {
   createTables,
-  dropTables,
-  initializeStaticValues
+  initializeStaticValues,
+  createAdmin
 };
 
 require('make-runnable');

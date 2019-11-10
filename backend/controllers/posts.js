@@ -5,7 +5,7 @@ exports.getFeeds = async (request, response) => {
   try {
     const postFeeds = await pool.query(`
       SELECT * FROM posts
-      ORDER BY created_at DESC`);
+      ORDER BY created_date DESC`);
       posts = postFeeds.rows;
       return response.json({
        status: "success",
@@ -15,7 +15,12 @@ exports.getFeeds = async (request, response) => {
       })
 
   } catch (err) {
-
+    return response.status(500).json({
+      status: "failed",
+      data: {
+        message: "Server error!"
+      }
+    })
   }
 }
 
@@ -29,12 +34,12 @@ exports.getArticle = async (request, response) => {
         posts.user_id As posted_by_id,
         posts.content AS post_content,
         posts.gif_url AS post_gif_URL,
-        posts.created_at AS post_created_at,
+        posts.created_date AS post_created_at,
         comments.id AS comment_id,
         comments.status AS comment_status,
         comments.content AS comment_content,
         comments.user_id AS comment_user_id,
-        comments.created_at AS comment_created_at,
+        comments.created_date AS comment_created_at,
         post_likes.user_id AS likers
       FROM posts
       LEFT JOIN comments ON posts.id=comments.post_id
@@ -94,7 +99,6 @@ exports.getArticle = async (request, response) => {
     })
 
   } catch (err) {
-    console.log(err)
     return response.status(500).json({
       status: "failed",
       data: {
@@ -129,27 +133,50 @@ exports.createArticle = async (request, response) => {
 }
 
 exports.updateArticle = async (request, response) => {
-  var today = new Date();
-  var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  var dateTime = date+' '+time;
   try{
+    var today = new Date();
+    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var dateTime = date+' '+time;
     const { title, content, user_id, status } = request.body
 
-    const updatedPost = await pool.query(`
-      UPDATE posts SET title=$1, content=$2, user_id=$3, status=$4, gif_url=$5, post_type=$6, updated_at=$8 
-      WHERE id=$7 RETURNING title, content, post_type, status`, 
-      [title, content, user_id, status, "none", 1, request.params.articleID, dateTime ]);
-    const newPostResult = updatedPost.rows[0]
-    return response.status(200).json({
-      status: "success",
-      data: { newPostResult }
-    })
+    const whoPostedTheArticle = await pool.query(`SELECT * FROM posts WHERE id=$1`, [request.params.articleID]);
+    if (whoPostedTheArticle.rowCount != 0){
+
+      if(whoPostedTheArticle.rows[0].user_id == request.body.user_id){
+       const updatedPost = await pool.query(`
+          UPDATE posts SET title=$1, content=$2, user_id=$3, status=$4, gif_url=$5, post_type=$6, modified_date=$8 
+          WHERE id=$7 RETURNING title, content, post_type, status`, 
+          [title, content, user_id, status, "none", 1, request.params.articleID, dateTime ]);
+        const newPostResult = updatedPost.rows[0]
+        return response.status(200).json({
+          status: "success",
+          data: { newPostResult }
+        })
+      } else {
+        return response.status(400).json({
+          status: "failed",
+          data: {
+            message: "You can only update your own posts"
+          }
+        })
+      }
+    }else {
+      return response.status(400).json({
+        status: "failed",
+        data: {
+          message: "This post is not available"
+        }
+      })
+    }
+
   } catch (err) {
     console.log(err)
-    response.status(400).json({
+    response.status(500).json({
       status: "failed",
-      data: err
+      data: {
+        message: "Internal server error!"
+      }
     })
   } 
 }
@@ -159,7 +186,7 @@ exports.deleteArticle =async (request, response) => {
     console.log(request.body.user_id)
     const whoPostedTheArticle = await pool.query(`SELECT * FROM posts WHERE id=$1`, [request.params.articleID]);
     if (whoPostedTheArticle.rowCount != 0){
-      if(whoPostedTheArticle.rows[0].user_id == request.body.user_id || (whoPostedTheArticle.rows[0].status == 2 && request.body.creator_id == 2)) {
+      if(whoPostedTheArticle.rows[0].user_id == request.body.user_id || (whoPostedTheArticle.rows[0].status != 1 && request.body.creator_id == 2)) {
        const deletedArticle = await pool.query(`DELETE FROM posts WHERE id=$1`, [request.params.articleID]);
         return response.status(200).json({
           status: "success",
@@ -185,9 +212,56 @@ exports.deleteArticle =async (request, response) => {
     }
   } catch (err) {
     console.log(err)
-    response.status(400).json({
+    response.status(500).json({
       status: "failed",
-      data: err
+      data: {
+        message: "Internal server error!"
+      }
+    })
+  } 
+}
+
+exports.flagArticle = async (request, response) => {
+  try{
+    console.log("flagged!")
+    const {content, user_id } = request.body
+    const isPostAvailable = await pool.query(`SELECT * FROM posts WHERE id=$1`, [request.params.postID]);
+
+    if(isPostAvailable.rowCount != 0) {
+      const updatePost = await pool.query(`
+            UPDATE posts SET status=$1 
+            WHERE id=$2`, 
+            [2, request.params.postID ]);
+      
+      const newFlag = await pool.query(`
+          INSERT INTO flagged_posts 
+          (content, user_id, post_id, status) 
+          VALUES ($1, $2, $3, $4) 
+          RETURNING content, status`, 
+          [content, user_id, request.params.postID, 1]);
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          message: "Flagged"
+        }
+      })
+    } else {
+      response.status(404).json({
+        status: "failed",
+        data: {
+          message: "This post doesn't exist"
+        }
+      })
+    }
+
+  } catch (err) {
+    console.log(err)
+    response.status(500).json({
+      status: "failed",
+      data: {
+        message: "Internal server error!"
+      }
     })
   } 
 }
@@ -255,20 +329,42 @@ exports.createGif = async (request, response) => {
   }
 }
 
-exports.deleteGif = async (request, response) => {
+exports.deleteGif =async (request, response) => {
   try {
-    const deletedGif = await pool.query('DELETE FROM posts WHERE id=$1', [request.params.gifID]);
-    return response.status(200).json({
-      status: "success",
-      data: {
-        message: "Gif deleted successfully"
+    const whoPostedTheGif = await pool.query(`SELECT * FROM posts WHERE id=$1`, [request.params.gifID]);
+    if (whoPostedTheGif.rowCount != 0){
+      if(whoPostedTheGif.rows[0].user_id == request.body.user_id || (whoPostedTheGif.rows[0].status != 1 && request.body.creator_id == 2)) {
+       const deletedGif = await pool.query(`DELETE FROM posts WHERE id=$1`, [request.params.gifID]);
+        return response.status(200).json({
+          status: "success",
+          data: {
+            message: "Gif deleted successfully"
+          }
+        })
+      } else {
+        return response.status(400).json({
+          status: "failed",
+          data: {
+            message: "You can not delete a post that isn't yours"
+          }
+        })
       }
-    })
+    } else {
+      return response.status(400).json({
+        status: "failed",
+        data: {
+          message: "This post is not available"
+        }
+      })
+    }
   } catch (err) {
+    console.log(err)
     response.status(500).json({
       status: "failed",
-      data: "Internal Server Error"
+      data: {
+        message: "Internal server error!"
+      }
     })
-  }
+  } 
 }
 

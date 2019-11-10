@@ -141,6 +141,17 @@ const createTables = () => {
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         modified_date TIMESTAMP
       );
+
+    CREATE TABLE IF NOT EXISTS
+      flagged_posts(
+        id SERIAL PRIMARY KEY,
+        post_id INTEGER NOT NULL REFERENCES posts(id),
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        content VARCHAR(20000) NOT NULL,
+        status INTEGER DEFAULT 1,
+        created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        modified_date TIMESTAMP
+      );
     `;
 
       

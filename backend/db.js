@@ -96,7 +96,7 @@ const createTables = () => {
         title VARCHAR(200) NOT NULL,
         content VARCHAR(20000),
         user_id INTEGER NOT NULL REFERENCES users(id),
-        status INTEGER DEFAULT 1,
+        status INTEGER NOT NULL DEFAULT 1,
         gif_url VARCHAR(500),
         post_type INTEGER NOT NULL REFERENCES post_types(id),
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

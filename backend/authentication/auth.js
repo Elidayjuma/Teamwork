@@ -7,9 +7,9 @@ const createUser = async (request, response) => {
   try {
     let email = request.body.email.toLowerCase();
     let username = request.body.username.toLowerCase();
-    const { phone_no, first_name, last_name, avatar, job_position, department, user_address, creator_role } = request.body
+    const { phone_no, first_name, last_name, avatar, job_position, department, user_address, creator_id } = request.body
 
-    if (creator_role == 2 || creator_role == 1) {
+    if (creator_id == 2 || creator_id == 1) {
 
       let initialPassword = bcrypt.hashSync(phone_no.toString(), 10);
   
@@ -112,10 +112,10 @@ const loginUser = async (request, res) => {
     }
   } catch (err) {
     console.log(err)
-    return res.json({
+    return res.status(500).json({
       status: "failed",
       data: {
-        message: err
+        message: "Internal server error!"
       }
     })
   }
@@ -136,7 +136,7 @@ const checkToken = (req, res, next) => {
         });
 
       }
-
+      req.body.user_id = decoded.userId
       next();
     });
 
@@ -150,8 +150,8 @@ const checkToken = (req, res, next) => {
 }
 
 const checkUserRole = async (request, response, next) => {
-  const userRole = await pool.query(`SELECT role_id FROM role_users WHERE user_id = $1`, [request.body.creator_id])
-  request.body.creator_role == userRole.rows[0].role_id
+  const userRole = await pool.query(`SELECT role_id FROM role_users WHERE user_id = $1`, [request.body.user_id])
+  request.body.creator_id = userRole.rows[0].role_id
   next();
 }
 

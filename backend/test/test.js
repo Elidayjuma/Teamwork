@@ -27,8 +27,8 @@ describe('/POST user', () => {
     chai.request(server)
         .post('/auth/create-user')
         .end((err, res) => {
-              res.should.have.status(200);
-              res.body.should.be.a('object');
+            res.should.have.status(200);
+            res.body.should.be.a('object');
           done();
         });
   });
@@ -46,53 +46,53 @@ describe('/POST user login', () => {
   });
 });
 
-describe('/POST gif', () => {
-    it('it should POST a gif', (done) => {
-      chai.request(server)
-          .post('/posts/gifs')
-          .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-            done();
-          });
-    });
-});
+// describe('/POST gif', () => {
+//     it('it should POST a gif', (done) => {
+//       chai.request(server)
+//           .post('/posts/gifs')
+//           .end((err, res) => {
+//                 res.should.have.status(200);
+//                 res.body.should.be.a('object');
+//             done();
+//           });
+//     });
+// });
 
-describe('/POST article', () => {
-    it('it should POST an article', (done) => {
-      chai.request(server)
-          .post('/posts/articles')
-          .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-            done();
-          });
-    });
-});
+// describe('/POST article', () => {
+//     it('it should POST an article', (done) => {
+//       chai.request(server)
+//           .post('/posts/articles')
+//           .end((err, res) => {
+//                 res.should.have.status(200);
+//                 res.body.should.be.a('object');
+//             done();
+//           });
+//     });
+// });
 
-describe('/PATCH article', () => {
-    it('it should UPDATE an article', (done) => {
-      chai.request(server)
-          .patch('/article/:articleID')
-          .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-            done();
-          });
-    });
-});
+// describe('/PATCH article', () => {
+//     it('it should UPDATE an article', (done) => {
+//       chai.request(server)
+//           .patch('/article/:articleID')
+//           .end((err, res) => {
+//                 res.should.have.status(200);
+//                 res.body.should.be.a('object');
+//             done();
+//           });
+//     });
+// });
 
-describe('/DELETE article', () => {
-    it('it should DELETE an article', (done) => {
-      chai.request(server)
-          .delete('/articles:id')
-          .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-            done();
-          });
-    });
-});
+// describe('/DELETE article', () => {
+//     it('it should DELETE an article', (done) => {
+//       chai.request(server)
+//           .delete('/articles:id')
+//           .end((err, res) => {
+//                 res.should.have.status(200);
+//                 res.body.should.be.a('object');
+//             done();
+//           });
+//     });
+// });
 
 // describe('/DELETE gifs', () => {
 //     it('it should DELETE an gifs', (done) => {
@@ -106,17 +106,17 @@ describe('/DELETE article', () => {
 //     });
 // });;
 
-describe('/POST article comment', () => {
-    it('it should POST a comment for a given article', (done) => {
-      chai.request(server)
-          .post('/articles/articleID/comment')
-          .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-            done();
-          });
-    });
-});
+// describe('/POST article comment', () => {
+//     it('it should POST a comment for a given article', (done) => {
+//       chai.request(server)
+//           .post('/articles/articleID/comment')
+//           .end((err, res) => {
+//                 res.should.have.status(200);
+//                 res.body.should.be.a('object');
+//             done();
+//           });
+//     });
+// });
 
 // describe('/POST gif comment', () => {
 //     it('it should POST a comment for a given gif', (done) => {

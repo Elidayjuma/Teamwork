@@ -32,7 +32,7 @@ router.post('/article/:postID/comment',auth.checkToken, comment.createComment);
 router.post('/article/:articleID/like', auth.checkToken, post.likeArticle);
 router.get('/article/:articleID',auth.checkToken, post.getArticle);
 router.patch('/article/:articleID',auth.checkToken, post.updateArticle);
-router.delete('/article/:articleID', auth.checkToken, post.deleteArticle);
+router.delete('/article/:articleID', auth.checkToken, auth.checkUserRole, post.deleteArticle);
 
 //gif routes
 router.post('/gif',auth.checkToken, multerUploads, returnImageUrl ,post.createGif);

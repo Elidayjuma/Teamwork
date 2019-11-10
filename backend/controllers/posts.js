@@ -106,9 +106,13 @@ exports.getArticle = async (request, response) => {
 
 exports.createArticle = async (request, response) => {
   try {
-    const { title, content, user_id, status } = request.body
-
-    const newPost = await pool.query('INSERT INTO posts (title, content, user_id, status, gif_url, post_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING title, content, post_type, status', [title, content, user_id, status, "none", 1]);
+    const { title, content, user_id} = request.body
+    const status = 1;
+    const newPost = await pool.query(`INSERT INTO posts (
+      title, content, user_id, status, gif_url, post_type) 
+      VALUES ($1, $2, $3, $4, $5, $6) 
+      RETURNING id, title, content, post_type`, 
+      [title, content, user_id, status, "none", 1]);
 
     const newPostResult = newPost.rows[0]
     return response.status(200).json({
@@ -132,7 +136,10 @@ exports.updateArticle = async (request, response) => {
   try{
     const { title, content, user_id, status } = request.body
 
-    const updatedPost = await pool.query('UPDATE posts SET title=$1, content=$2, user_id=$3, status=$4, gif_url=$5, post_type=$6, updated_at=$8 WHERE id=$7 RETURNING title, content, post_type, status', [title, content, user_id, status, "none", 1, request.params.articleID, dateTime ]);
+    const updatedPost = await pool.query(`
+      UPDATE posts SET title=$1, content=$2, user_id=$3, status=$4, gif_url=$5, post_type=$6, updated_at=$8 
+      WHERE id=$7 RETURNING title, content, post_type, status`, 
+      [title, content, user_id, status, "none", 1, request.params.articleID, dateTime ]);
     const newPostResult = updatedPost.rows[0]
     return response.status(200).json({
       status: "success",
@@ -149,13 +156,33 @@ exports.updateArticle = async (request, response) => {
 
 exports.deleteArticle =async (request, response) => {
   try {
-    const deletedArticle = await pool.query('DELETE FROM posts WHERE id=$1', [request.params.articleID]);
-    return response.status(200).json({
-      status: "success",
-      data: {
-        message: "Article deleted successfully"
+    console.log(request.body.user_id)
+    const whoPostedTheArticle = await pool.query(`SELECT * FROM posts WHERE id=$1`, [request.params.articleID]);
+    if (whoPostedTheArticle.rowCount != 0){
+      if(whoPostedTheArticle.rows[0].user_id == request.body.user_id || (whoPostedTheArticle.rows[0].status == 2 && request.body.creator_id == 2)) {
+       const deletedArticle = await pool.query(`DELETE FROM posts WHERE id=$1`, [request.params.articleID]);
+        return response.status(200).json({
+          status: "success",
+          data: {
+            message: "Article deleted successfully"
+          }
+        })
+      } else {
+        return response.status(400).json({
+          status: "failed",
+          data: {
+            message: "You can not delete a post that isn't yours"
+          }
+        })
       }
-    })
+    } else {
+      return response.status(400).json({
+        status: "failed",
+        data: {
+          message: "This post is not available"
+        }
+      })
+    }
   } catch (err) {
     console.log(err)
     response.status(400).json({

@@ -32,6 +32,7 @@ router.post('/article/:postID/comment',auth.checkToken, comment.createComment);
 router.post('/article/:articleID/like', auth.checkToken, post.likeArticle);
 router.post('/article/:postID/flag', auth.checkToken, post.flagArticle);
 router.get('/article/:articleID',auth.checkToken, post.getArticle);
+router.get('/article',auth.checkToken, post.getManyArticles);
 router.patch('/article/:articleID',auth.checkToken, post.updateArticle);
 router.delete('/article/:articleID', auth.checkToken, auth.checkUserRole, post.deleteArticle);
 router.delete('/article/:articleID/comment/:commentID', auth.checkToken, auth.checkUserRole, comment.deleteComment);
@@ -39,6 +40,7 @@ router.delete('/article/:articleID/comment/:commentID', auth.checkToken, auth.ch
 //gif routes
 router.post('/gif',auth.checkToken, multerUploads, returnImageUrl ,post.createGif);
 router.post('/gif/:postID/comment',auth.checkToken, comment.createComment);
+router.post('/gif/:postID/flag', auth.checkToken, post.flagGif);
 router.delete('/gif/:gifID',auth.checkToken, post.deleteGif);
 router.delete('/gif/:gifID/comment/:commentID', auth.checkToken, auth.checkUserRole, comment.deleteComment);
 

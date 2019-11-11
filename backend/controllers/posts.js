@@ -24,6 +24,46 @@ exports.getFeeds = async (request, response) => {
   }
 }
 
+exports.getManyArticles = async (request, response) => {
+  try {
+    if( Object.keys(request.query).length != 0) {
+      console.log(request.query.tag)
+      const articleFeedsByTag = await pool.query(`
+        SELECT * FROM posts_tags 
+        LEFT JOIN posts ON posts_tags.id=posts.id 
+        WHERE post_tag_id=$1`,[request.query.tag]);
+        return response.status(200).json({
+          status: "success",
+          data: {
+            articleFeedsByTag
+          }
+        })
+
+    }else {
+      const articleFeeds = await pool.query(`
+        SELECT * FROM posts
+        WHERE post_type=$1
+        ORDER BY created_date DESC`,[1]);
+        posts = articleFeeds.rows;
+        return response.status(200).json({
+         status: "success",
+         data: {
+          posts
+         }
+        })
+    }
+
+  } catch (err) {
+    console.log(err)
+    return response.status(500).json({
+      status: "failed",
+      data: {
+        message: "Server error!"
+      }
+    })
+  }
+}
+
 exports.getArticle = async (request, response) => {
   try {
     const singleArticle = await pool.query(`
@@ -40,10 +80,12 @@ exports.getArticle = async (request, response) => {
         comments.content AS comment_content,
         comments.user_id AS comment_user_id,
         comments.created_date AS comment_created_at,
-        post_likes.user_id AS likers
+        post_likes.user_id AS likers,
+        posts_tags.post_tag_id As tags_id
       FROM posts
       LEFT JOIN comments ON posts.id=comments.post_id
       LEFT JOIN post_likes ON posts.id=post_likes.post_id
+      LEFT JOIN posts_tags ON posts.id=posts_tags.post_id
       WHERE posts.id=$1`,
       [request.params.articleID]);
     article = singleArticle.rows;
@@ -88,17 +130,48 @@ exports.getArticle = async (request, response) => {
         likers.push(like);
       }
     }
+    //for eacch row, push the post_tas into a tags array
+    let tags =[];
+    if (article[0].tags_id == null) {
+      tags.push(null)
+    } else {
+      for (let i = 0; i < article.length; i++) {
+        const tagName = await pool.query(`SELECT name FROM post_tags WHERE id=$1`,[article[i].tags_id])
+        let tag = {
+          tag: tagName.rows[0].name
+        }
+        tags.push(tag)
+      }
+    }
 
     return response.status(200).json({
       status: "success",
       data: {
         post_content,
         comments,
-        likers
+        likers,
+        tags
       }
     })
 
   } catch (err) {
+    console.log(err)
+    return response.status(500).json({
+      status: "failed",
+      data: {
+        message: "Server error!"
+      }
+    })
+  }
+}
+
+exports.getArticleByTag = async (request, response) => {
+  try{
+    console.log("getting article by tagID")
+    console.log(request)
+
+  }catch (err) {
+    console.log(err)
     return response.status(500).json({
       status: "failed",
       data: {
@@ -118,10 +191,18 @@ exports.createArticle = async (request, response) => {
       RETURNING id, title, content, post_type`, 
       [title, content, user_id, status, "none", 1]);
 
+    const insertedTags = await pool.query(`INSERT INTO posts_tags (
+      post_id, post_tag_id) 
+      VALUES ($1, $2)`, 
+      [newPost.rows[0].id, request.body.tag]);
+
     const newPostResult = newPost.rows[0]
     return response.status(200).json({
       status: "success",
-      data: { newPostResult }
+      data: { 
+        newPostResult,
+        post_tag: request.body.tag
+       }
     })
   } catch (err) {
     console.log(err)
@@ -147,7 +228,7 @@ exports.updateArticle = async (request, response) => {
        const updatedPost = await pool.query(`
           UPDATE posts SET title=$1, content=$2, user_id=$3, status=$4, gif_url=$5, post_type=$6, modified_date=$8 
           WHERE id=$7 RETURNING title, content, post_type, status`, 
-          [title, content, user_id, status, "none", 1, request.params.articleID, dateTime ]);
+          [title, content, user_id, 1, "none", 1, request.params.articleID, dateTime ]);
         const newPostResult = updatedPost.rows[0]
         return response.status(200).json({
           status: "success",
@@ -306,18 +387,24 @@ exports.likeArticle = async (request, response, next) => {
 
 exports.createGif = async (request, response) => {
   try {
-    const {title, user_id, status, gif_url} = request.body
+    const { title, user_id, status, gif_url } = request.body
 
     const newGif = await pool.query(`
       INSERT INTO posts (title, content, user_id, status, gif_url, post_type) 
       VALUES ($1, $2, $3, $4, $5, $6) 
-      RETURNING title, gif_url, post_type`, [title, "none", user_id, status, gif_url, 2]);
-      
+      RETURNING id, user_id, title, gif_url, post_type`, [title, "none", user_id, status, gif_url, 2]);
+
+    const insertedTags = await pool.query(`INSERT INTO posts_tags (
+        post_id, post_tag_id) 
+        VALUES ($1, $2)`,
+      [newGif.rows[0].id, request.body.tag]);
+
     const newGifResult = newGif.rows[0]
     return response.status(200).json({
       status: "success",
       data: {
-        newGifResult
+        newGifResult,
+        post_tag: request.body.tag
       }
     })
   } catch (err) {
@@ -368,3 +455,49 @@ exports.deleteGif =async (request, response) => {
   } 
 }
 
+exports.flagGif = async (request, response) => {
+  try{
+    console.log("flagged!")
+    const {content, user_id } = request.body
+    const isPostAvailable = await pool.query(`SELECT * FROM posts WHERE id=$1`, [request.params.postID]);
+    console.log(isPostAvailable.rows[0])
+
+    if(isPostAvailable.rowCount != 0) {
+      const updatePost = await pool.query(`
+            UPDATE posts 
+            SET status=$1
+            WHERE id=$2`, 
+            [2, request.params.postID]);
+      
+      const newFlag = await pool.query(`
+          INSERT INTO flagged_posts 
+          (content, user_id, post_id, status) 
+          VALUES ($1, $2, $3, $4) 
+          RETURNING content, status`, 
+          [content, user_id, request.params.postID, 1]);
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          message: "Flagged"
+        }
+      })
+    } else {
+      response.status(404).json({
+        status: "failed",
+        data: {
+          message: "This post doesn't exist"
+        }
+      })
+    }
+
+  } catch (err) {
+    console.log(err)
+    response.status(500).json({
+      status: "failed",
+      data: {
+        message: "Internal server error!"
+      }
+    })
+  } 
+}

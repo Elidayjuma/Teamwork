@@ -1,0 +1,6 @@
+language: node_js
+cache: npm
+deploy:
+  github-token: $GITHUB_TOKEN
+  on:
+    branch: master

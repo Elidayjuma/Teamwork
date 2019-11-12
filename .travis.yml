@@ -1,8 +1,10 @@
 before_install: cd backend
 language: node_js
 node_js:
-  -10.16.0
-cache: npm
+  - "stable"
+cache: 
+  directories:
+    - "node_modules"
 install:
   -npm install
 script:

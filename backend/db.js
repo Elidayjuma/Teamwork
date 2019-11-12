@@ -62,7 +62,7 @@ const createTables = () => {
       role_users(
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        role_id INTEGER NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+        role_id INTEGER NOT NULL REFERENCES roles(id),
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         modified_date TIMESTAMP
       );
@@ -75,8 +75,8 @@ const createTables = () => {
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         avatar VARCHAR(200),
         user_address VARCHAR(200),
-        job_position INTEGER REFERENCES job_positions(id) ON DELETE CASCADE,
-        department INTEGER REFERENCES departments(id) ON DELETE CASCADE,
+        job_position INTEGER REFERENCES job_positions(id),
+        department INTEGER REFERENCES departments(id),
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         modified_date TIMESTAMP
       );
@@ -107,7 +107,7 @@ const createTables = () => {
       comments(
         id SERIAL PRIMARY KEY,
         content VARCHAR(20000),
-        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        user_id INTEGER NOT NULL REFERENCES users(id),
         post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
         status INTEGER DEFAULT 1,
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -117,7 +117,7 @@ const createTables = () => {
     CREATE TABLE IF NOT EXISTS
       post_likes(
         id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL REFERENCES users(id) UNIQUE ON DELETE CASCADE,
+        user_id INTEGER NOT NULL REFERENCES users(id) UNIQUE,
         post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         modified_date TIMESTAMP
@@ -135,7 +135,7 @@ const createTables = () => {
     CREATE TABLE IF NOT EXISTS
       posts_tags(
         id SERIAL PRIMARY KEY,
-        post_id INTEGER REFERENCES posts(id),
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
         post_tag_id INTEGER REFERENCES post_tags(id),
         status INTEGER DEFAULT 1,
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -146,7 +146,7 @@ const createTables = () => {
       flagged_posts(
         id SERIAL PRIMARY KEY,
         post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        user_id INTEGER NOT NULL REFERENCES users(id),
         content VARCHAR(20000) NOT NULL,
         status INTEGER DEFAULT 1,
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

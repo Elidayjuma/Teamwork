@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const pool = db.pool;
 
-const createUser = async (request, response) => {
+exports.createUser = async (request, response) => {
   try {
     let email = request.body.email.toLowerCase();
     let username = request.body.username.toLowerCase();
@@ -12,7 +12,7 @@ const createUser = async (request, response) => {
     if (creator_id == 2 || creator_id == 1) {
 
       let initialPassword = bcrypt.hashSync(phone_no.toString(), 10);
-  
+
       const newUser = await pool.query(`
           INSERT INTO users (
           username, password, email, phone_no) 
@@ -25,7 +25,7 @@ const createUser = async (request, response) => {
           VALUES ($1, $2, $3, $4, $5, $6, $7) 
           RETURNING first_name, last_name`, [first_name, last_name, newUser.rows[0].id, avatar, job_position, department, user_address]);
       const roleUser = await pool.query('INSERT INTO role_users (user_id, role_id) VALUES ($1, $2)', [newUser.rows[0].id, 3]);
-  
+
       const newUserResult = newUser.rows[0]
       const newUserDetailsResult = newUserDetails.rows[0]
       return response.status(200).json({
@@ -45,13 +45,14 @@ const createUser = async (request, response) => {
     response.status(500).json({
       status: "failed",
       data: {
-        message: "Internal server error"
+        message: "Internal server error",
+        detail: err.detail
       }
     })
   }
 }
 
-const loginUser = async (request, res) => {
+exports.loginUser = async (request, res) => {
   try {
     const { email, password } = request.body
 
@@ -68,7 +69,7 @@ const loginUser = async (request, res) => {
       if (passwordCheck == true) {
         const token = jwt.sign({ userId: doesUserExist.rows[0].id }, 'RANDOM_TOKEN_SECRET', { expiresIn: '30d' });
         const userDetails = await pool.query('SELECT * FROM user_details WHERE user_id = $1', [doesUserExist.rows[0].id])
-        
+
         console.log(userDetails.rowCount)
         if (userDetails.rowCount != 0) {
           const job_position_name = await pool.query(`SELECT name FROM job_positions WHERE id = $1`, [userDetails.rows[0].job_position]);
@@ -121,7 +122,7 @@ const loginUser = async (request, res) => {
   }
 }
 
-const checkToken = (req, res, next) => {
+exports.checkToken = (req, res, next) => {
   const header = req.headers['authorization'];
 
   if (typeof header !== 'undefined') {
@@ -149,15 +150,8 @@ const checkToken = (req, res, next) => {
   }
 }
 
-const checkUserRole = async (request, response, next) => {
+exports.checkUserRole = async (request, response, next) => {
   const userRole = await pool.query(`SELECT role_id FROM role_users WHERE user_id = $1`, [request.body.user_id])
   request.body.creator_id = userRole.rows[0].role_id
   next();
-}
-
-module.exports = {
-  createUser,
-  loginUser,
-  checkToken,
-  checkUserRole
 }

@@ -61,8 +61,8 @@ const createTables = () => {
     CREATE TABLE IF NOT EXISTS
       role_users(
         id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL REFERENCES users(id),
-        role_id INTEGER NOT NULL REFERENCES roles(id),
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        role_id INTEGER NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         modified_date TIMESTAMP
       );
@@ -72,11 +72,11 @@ const createTables = () => {
         id SERIAL PRIMARY KEY,
         first_name VARCHAR(200) NOT NULL,
         last_name VARCHAR(200) NOT NULL,
-        user_id INTEGER NOT NULL REFERENCES users(id),
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         avatar VARCHAR(200),
         user_address VARCHAR(200),
-        job_position INTEGER REFERENCES job_positions(id),
-        department INTEGER REFERENCES departments(id),
+        job_position INTEGER REFERENCES job_positions(id) ON DELETE CASCADE,
+        department INTEGER REFERENCES departments(id) ON DELETE CASCADE,
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         modified_date TIMESTAMP
       );
@@ -95,7 +95,7 @@ const createTables = () => {
         id SERIAL PRIMARY KEY,
         title VARCHAR(200) NOT NULL,
         content VARCHAR(20000),
-        user_id INTEGER NOT NULL REFERENCES users(id),
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         status INTEGER NOT NULL DEFAULT 1,
         gif_url VARCHAR(500),
         post_type INTEGER NOT NULL REFERENCES post_types(id),
@@ -107,8 +107,8 @@ const createTables = () => {
       comments(
         id SERIAL PRIMARY KEY,
         content VARCHAR(20000),
-        user_id INTEGER NOT NULL REFERENCES users(id),
-        post_id INTEGER REFERENCES posts(id),
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
         status INTEGER DEFAULT 1,
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         modified_date TIMESTAMP
@@ -117,8 +117,8 @@ const createTables = () => {
     CREATE TABLE IF NOT EXISTS
       post_likes(
         id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL REFERENCES users(id) UNIQUE,
-        post_id INTEGER NOT NULL REFERENCES posts(id),
+        user_id INTEGER NOT NULL REFERENCES users(id) UNIQUE ON DELETE CASCADE,
+        post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         modified_date TIMESTAMP
       );
@@ -145,8 +145,8 @@ const createTables = () => {
     CREATE TABLE IF NOT EXISTS
       flagged_posts(
         id SERIAL PRIMARY KEY,
-        post_id INTEGER NOT NULL REFERENCES posts(id),
-        user_id INTEGER NOT NULL REFERENCES users(id),
+        post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         content VARCHAR(20000) NOT NULL,
         status INTEGER DEFAULT 1,
         created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -154,7 +154,7 @@ const createTables = () => {
       );
     `;
 
-      
+
   pool.query(queryText)
     .then((res) => {
       console.log(res);
@@ -171,7 +171,7 @@ const createTables = () => {
  */
 const initializeStaticValues = () => {
   const queryText =
-  `INSERT INTO departments(
+    `INSERT INTO departments(
     name, status)
     VALUES 
       ('Overall', 1),
@@ -230,26 +230,26 @@ const initializeStaticValues = () => {
  * Create Admin
  */
 const createAdmin = async (req, res) => {
-  try{
+  try {
     let initialPassword = bcrypt.hashSync("admin", 10);
     const username = "admin";
-    const email="admin@admin.team";
+    const email = "admin@admin.team";
     const phone_no = 123456789;
-    const admin = await pool.query( `
+    const admin = await pool.query(`
     INSERT INTO users (
     username, password, email, phone_no) 
     VALUES ($1, $2, $3, $4)
     RETURNING id`,
-    [username, initialPassword, email, phone_no]);
+      [username, initialPassword, email, phone_no]);
 
     await pool.query(`INSERT INTO role_users (user_id, role_id) VALUES ($1, $2)`, [admin.rows[0].id, 2]);
     console.log("Mission completed");
     pool.end();
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     pool.end();
   }
-    
+
 }
 
 pool.on('remove', () => {

@@ -1,34 +1,43 @@
 const db = require('../config/connection')
 const pool = db.pool;
 
-// exports.getUsers = (request, response) => {
-//   pool.query('SELECT username, email, phone_no, created_at  FROM users ORDER BY id ASC', (error, results) => {
-//     if (error) {
-//       response.json({
-//         status: "failed",
-//         data: {
-//           message: error
-//         }
-//       })
-//     }
-//     const allusers = results.rows;
-//     response.status(200).json({
-//       status: "success",
-//       data: allusers
-//     })
-//   })
-// }
+exports.getUsers = (request, response) => {
+  pool.query('SELECT id, username, email, phone_no, created_date  FROM users ORDER BY id ASC', (error, results) => {
+    if (error) {
+      return response.json({
+        status: "failed",
+        data: {
+          message: error
+        }
+      })
+    }
+    const allusers = results.rows;
+    return response.status(200).json({
+      status: "success",
+      data: allusers
+    })
+  })
+}
 
-// exports.getUserById = (request, response) => {
-//   const id = parseInt(request.params.id)
+exports.getUserById = (request, response) => {
+  const id = parseInt(request.params.id)
 
-//   pool.query('SELECT username, email, phone_no, created_at FROM users WHERE id = $1', [id], (error, results) => {
-//     if (error) {
-//       throw error
-//     }
-//     response.status(200).json(results.rows)
-//   })
-// }
+  pool.query('SELECT id, username, email, phone_no, created_date FROM users WHERE id = $1', [id], (error, results) => {
+    if (error) {
+      return response.json({
+        status: "failed",
+        data: {
+          message: error
+        }
+      })
+    }
+    const UserDetails = results.rows
+    return response.status(200).json({
+      status: "success",
+      data: UserDetails
+    })
+  })
+}
 
 // exports.updateUser = (request, response) => {
 //   const id = parseInt(request.params.id)
@@ -49,17 +58,22 @@ const pool = db.pool;
 exports.deleteUser = (request, response) => {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
+  // pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
+  pool.query(`DELETE FROM users WHERE id = $1`, [id], (error, results) => {
     if (error) {
-      throw error
+      console.log(error)
+      return response.json({
+        status: "failed",
+        data: {
+          message: error
+        }
+      })
     }
-    response.status(200).send(`User deleted with ID: ${id}`)
+    return response.status(200).json({
+      status: "success",
+      data: {
+        message: "User deleted Successfully"
+      }
+    })
   })
 }
-
-// module.exports = {
-//   getUsers,
-//   getUserById,
-//   updateUser,
-//   deleteUser,
-// }

@@ -17,9 +17,7 @@ exports.getFeeds = async (request, response) => {
   } catch (err) {
     return response.status(500).json({
       status: "failed",
-      data: {
-        message: "Server error!"
-      }
+      error: "Internal Server Error!"
     })
   }
 }
@@ -58,9 +56,7 @@ exports.getManyArticles = async (request, response) => {
     console.log(err)
     return response.status(500).json({
       status: "failed",
-      data: {
-        message: "Server error!"
-      }
+      error: "Internal Server Error!"
     })
   }
 }
@@ -159,9 +155,7 @@ exports.getArticle = async (request, response) => {
     console.log(err)
     return response.status(500).json({
       status: "failed",
-      data: {
-        message: "Server error!"
-      }
+      error: "Internal Server Error!"
     })
   }
 }
@@ -175,9 +169,7 @@ exports.getArticleByTag = async (request, response) => {
     console.log(err)
     return response.status(500).json({
       status: "failed",
-      data: {
-        message: "Server error!"
-      }
+      error: "Internal Server Error!"
     })
   }
 }
@@ -209,7 +201,7 @@ exports.createArticle = async (request, response) => {
     console.log(err)
     response.status(400).json({
       status: "failed",
-      data: err
+      error: "Internal Server Error!"
     })
   }
 }
@@ -238,17 +230,15 @@ exports.updateArticle = async (request, response) => {
       } else {
         return response.status(400).json({
           status: "failed",
-          data: {
-            message: "You can only update your own posts"
-          }
+          error: "You can only update your own posts"
+          
         })
       }
     } else {
       return response.status(400).json({
         status: "failed",
-        data: {
-          message: "This post is not available"
-        }
+        error: "This post is not available"
+        
       })
     }
 
@@ -256,9 +246,7 @@ exports.updateArticle = async (request, response) => {
     console.log(err)
     response.status(500).json({
       status: "failed",
-      data: {
-        message: "Internal server error!"
-      }
+      error: "Internal Server Error!"
     })
   }
 }
@@ -278,26 +266,22 @@ exports.deleteArticle = async (request, response) => {
       } else {
         return response.status(400).json({
           status: "failed",
-          data: {
-            message: "You can not delete a post that isn't yours"
-          }
+          error: "You can not delete a post that isn't yours"
+          
         })
       }
     } else {
       return response.status(400).json({
         status: "failed",
-        data: {
-          message: "This post is not available"
-        }
+        error: "This post is not available"
+        
       })
     }
   } catch (err) {
     console.log(err)
     response.status(500).json({
       status: "failed",
-      data: {
-        message: "Internal server error!"
-      }
+      error: "Internal Server Error!"
     })
   }
 }
@@ -330,9 +314,8 @@ exports.flagArticle = async (request, response) => {
     } else {
       response.status(404).json({
         status: "failed",
-        data: {
-          message: "This post doesn't exist"
-        }
+        error: "This post doesn't exist"
+        
       })
     }
 
@@ -340,9 +323,7 @@ exports.flagArticle = async (request, response) => {
     console.log(err)
     response.status(500).json({
       status: "failed",
-      data: {
-        message: "Internal server error!"
-      }
+      error: "Internal Server Error!"
     })
   }
 }
@@ -380,7 +361,7 @@ exports.likeArticle = async (request, response, next) => {
     console.log(err)
     response.status(500).json({
       status: "failed",
-      data: "Internal Server Error"
+      error: "Internal Server Error"
     })
   }
 }
@@ -411,7 +392,7 @@ exports.createGif = async (request, response) => {
     console.log(err)
     response.status(500).json({
       status: "failed",
-      data: "Internal Server Error"
+      error: "Internal Server Error"
     })
   }
 }
@@ -431,26 +412,22 @@ exports.deleteGif = async (request, response) => {
       } else {
         return response.status(400).json({
           status: "failed",
-          data: {
-            message: "You can not delete a post that isn't yours"
-          }
+          error: "You can not delete a post that isn't yours"
+          
         })
       }
     } else {
       return response.status(400).json({
         status: "failed",
-        data: {
-          message: "This post is not available"
-        }
+        error: "This post is not available"
+        
       })
     }
   } catch (err) {
     console.log(err)
     response.status(500).json({
       status: "failed",
-      data: {
-        message: "Internal server error!"
-      }
+      error: "Internal Server Error!"
     })
   }
 }
@@ -485,9 +462,8 @@ exports.flagGif = async (request, response) => {
     } else {
       response.status(404).json({
         status: "failed",
-        data: {
-          message: "This post doesn't exist"
-        }
+        error: "This post doesn't exist"
+        
       })
     }
 
@@ -495,9 +471,7 @@ exports.flagGif = async (request, response) => {
     console.log(err)
     response.status(500).json({
       status: "failed",
-      data: {
-        message: "Internal server error!"
-      }
+      error: "Internal Server Error!"
     })
   }
 }

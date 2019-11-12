@@ -35,16 +35,15 @@ exports.createUser = async (request, response) => {
     } else {
       return response.status(403).json({
         status: "failed",
-        data: {
-          message: "You have no permission to create an employee"
-        }
+        error: "You have no permission to create an employee"
+        
       })
     }
   } catch (err) {
     console.log(err)
     response.status(500).json({
       status: "failed",
-      data: {
+      error: {
         message: "Internal server error",
         detail: err.detail
       }
@@ -105,9 +104,8 @@ exports.loginUser = async (request, res) => {
       } else {
         return res.status(401).json({
           status: "failed",
-          data: {
-            message: "Wrong password or email provided"
-          }
+          error: "Wrong password or email provided"
+          
         })
       }
     }
@@ -115,9 +113,7 @@ exports.loginUser = async (request, res) => {
     console.log(err)
     return res.status(500).json({
       status: "failed",
-      data: {
-        message: "Internal server error!"
-      }
+      error: "Internal Server Error!"
     })
   }
 }

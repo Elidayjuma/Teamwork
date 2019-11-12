@@ -21,7 +21,7 @@ exports.createComment = async (request, response) => {
     console.log(err)
     response.status(400).json({
       status: "failed",
-      data: err
+      error: "Internal Server Error!"
     })
   }
 
@@ -42,26 +42,22 @@ exports.deleteComment = async (request, response) => {
       } else {
         return response.status(400).json({
           status: "failed",
-          data: {
-            message: "You can not delete a comment that isn't yours"
-          }
+          error: "You can not delete a comment that isn't yours"
+        
         })
       }
     } else {
       return response.status(400).json({
         status: "failed",
-        data: {
-          message: "This comment is not available"
-        }
+        error: "This comment is not available"
+        
       })
     }
   } catch (err) {
     console.log(err)
     response.status(500).json({
       status: "failed",
-      data: {
-        message: "Internal server error!"
-      }
+      error: "Internal Server Error!"
     })
   }
 }

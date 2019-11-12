@@ -6,9 +6,8 @@ exports.getUsers = (request, response) => {
     if (error) {
       return response.json({
         status: "failed",
-        data: {
-          message: error
-        }
+        error: error
+        
       })
     }
     const allusers = results.rows;
@@ -26,9 +25,8 @@ exports.getUserById = (request, response) => {
     if (error) {
       return response.json({
         status: "failed",
-        data: {
-          message: error
-        }
+        error: error
+        
       })
     }
     const UserDetails = results.rows
@@ -61,12 +59,10 @@ exports.deleteUser = (request, response) => {
   // pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
   pool.query(`DELETE FROM users WHERE id = $1`, [id], (error, results) => {
     if (error) {
-      console.log(error)
       return response.json({
         status: "failed",
-        data: {
-          message: error
-        }
+        error: error
+        
       })
     }
     return response.status(200).json({

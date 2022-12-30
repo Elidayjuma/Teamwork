@@ -37,7 +37,7 @@
     "eslint-plugin-react": "^7.14.3",
     "eslint-plugin-react-hooks": "^1.7.0",
     "jasmine": "^3.5.0",
-    "mocha": "^6.2.2",
+    "mocha": "^10.2.0",
     "request": "^2.88.0"
   }
 }
